@@ -19,21 +19,10 @@ public func routes(_ router: Router) throws {
         }
     }
     
-    router.get("api", "acronyms", Acronym.parameter) { (req: Request) -> Future<Acronym> in
-//        guard let id: Int = req.parameters.next(Int.self) else {
-//            return req.future(nil)
-//        }
+    router.get("api", "acronyms", Int.parameter) { req -> Future<Acronym> in
+        let id: Int = try req.parameters.next(Int.self)
         
-//        do {
-//            return try Acronym.find(0, on: req)
-//        } catch {
-//            return req.future(nil)
-//        }
-        
-        return req.future(Acronym(short: "rtfm", long: "red trolls fight madly"))
-        
-        
-//        return Acronym.query(on: req).all()
+        return Acronym.find(id, on: req).unwrap(or: Abort(.notFound))
     }
     
     router.get("api", "acronyms") { req -> Future<[Acronym]> in
